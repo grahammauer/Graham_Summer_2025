@@ -100,7 +100,8 @@ function k = boundary_curvature(R, Rp, Rpp, theta)
     rp = Rp(theta);
     rpp = Rpp(theta);
 
-    k = (r.^2 + 2 * rp.^2 - r .* rpp) ./ ((r.^2 + rp.^2).^(3/2)); % I ended up just using the definition for a polar defined function
+    k = (r.^2 + 2 * rp.^2 - r .* rpp) ./ ((r.^2 + rp.^2).^(3/2));% I ended up just using the definition for a polar defined function
+    % That's fine for now, but we won't always have polar paremeterization
 
 end
 
@@ -142,7 +143,7 @@ function tau = solve_laplace_density(n, R, Rp, Rpp, f)
             % Fill diagonal
             if i == j
     
-                K(i,j) = kappa(i) / (4 * pi);
+                K(i,j) = - kappa(i) / (4 * pi); % Why no negative sign? (See Alex's notes, lect 11)
             
             % Fill off-diagonal
             else
@@ -150,7 +151,9 @@ function tau = solve_laplace_density(n, R, Rp, Rpp, f)
                 r1 = z(1,i)-z(1,j);
                 r2 = z(2,i)-z(2,j);
     
-                K(i,j) = 1 / (2*pi) * (n_y(1,i)*r1 + n_y(2,i)*r2) / (r1^2 + r2^2);
+                K(i,j) = 1 / (2*pi) * (n_y(1,j)*r1 + n_y(2,j)*r2) / (r1^2 + r2^2);
+                % Ah. Careful where you take that normal! It should be
+                % evaluated at *s*, not t. 
     
             end
     
@@ -165,7 +168,7 @@ function tau = solve_laplace_density(n, R, Rp, Rpp, f)
     title('Kernel Function');
     
     % Construct operator
-    D = eye(n) - 2 * K * diag(speed .* (2 * pi / n * ones(1,n)));
+    D = eye(n) - 2 * K * diag(speed .* (2 * pi / n * ones(1,n))); % Nice
     
     % Initialize boundary conditions
     boundary_data = f(z(1,:), z(2,:));
