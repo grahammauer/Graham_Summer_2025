@@ -1,0 +1,132 @@
+\documentclass{article}
+
+\usepackage{graphicx,color,subcaption}
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage{setspace}  % use this package to set line spacing as desired
+\usepackage{times}  % set Times New Roman as the font
+\usepackage[explicit]{titlesec}  % title control and formatting
+\usepackage[titles]{tocloft}  % table of contents control and formatting
+%\usepackage[backend=biber, bibstyle=ieee]{biblatex}
+\usepackage[bookmarks=true, hidelinks]{hyperref}
+\setlength {\marginparwidth }{2cm}
+\usepackage{todonotes}
+\usepackage{amssymb,amsmath,amsthm,mathabx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usepackage{nicematrix}
+\usepackage{letltxmacro}
+\usepackage[makeroom]{cancel}
+\usepackage{upgreek}
+\usepackage{csquotes}
+\usepackage{mathbbol}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{amsfonts}
+\usepackage{soul}
+\usepackage[page]{appendix}  % for appendices
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[normalem]{ulem}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{breqn}
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{csvsimple}
+\usepackage{bm}
+\usepackage{float}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Define first and second derivative notation
+\newcommand{\p}{^{\prime}}
+\newcommand{\pp}{^{\prime\prime}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+
+\newcommand{\mcO}{\mathcal{O}}
+
+\newcommand{\BE}[1]{\bm{\mathsf{#1}}}
+
+\newcommand{\ip}[2]{\left\langle #1, #2 \right\rangle}
+
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\spanvec}{span}
+
+\newcommand{\deriv}[3][]{\frac{\mathrm{d}^{#1}#2}{\mathrm{d}#3^{#1}}}
+\newcommand{\pderiv}[3][]{\frac{\partial^{#1}#2}{\partial#3^{#1}}}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+
+    \noindent We want to identify the Fréchet derivative of the dispersion relation $\kappa(\omega)$ (or $\omega(\kappa)$). We know
+    \begin{align}
+        -(\Delta + \omega^2)\psi &= 0, \quad x\in\Omega \\
+        \psi_n &= 0,\quad x\in\Gamma
+    \end{align}
+    where $\psi$ is a Laplace eigenfunction corresponding to $\lambda = \omega^2$ can (or will?) lead to a trapped mode on a periodic function. Then, the quasi-periodicity condition
+    \begin{align}
+        \psi(\vec{x}+n\vec{d}) &= e^{in\kappa d}\psi(x)
+    \end{align}
+    links $\kappa$ and $\omega$. We define a function, $F: \Gamma \to \kappa$, that is numerically available from Riley's forward solver. We want to find the Fréchet derivative of $F$ with respect to the parameterization of the boundary $\Gamma$, $\bar{\gamma}$. This is done by making a collection of points and using some interpolation method to construct the boundary (polygon, splines, or polynomial interpolation perhaps). In order to achieve this, we differentiate with respect to $\tau$ which parametrizes the change of the boundary using the product rule,
+    \begin{align}\label{eq:Frechet derivative relation}
+        \psi_\tau(\vec{x}+n\vec{d}) &= in\kappa' de^{in\kappa d}\psi(x) + e^{in\kappa d}\psi_\tau(\vec{x})
+    \end{align}
+    where $\kappa'$ is the quantity of interest. We now need to identify an expression for $\psi'$ from the Grinfeld paper. The eigenfunction variation, $\psi_\tau$, in $\Omega$ is governed by the system 
+    \begin{align}\label{eq:psi_tau defn}
+        \Delta \psi_\tau + \lambda \psi_\tau &= -\lambda'\psi \\
+        \intertext{with the normalization condition}
+        2\int_\Omega \psi_\tau \psi d\Omega + \int_S C\psi^2ds &= 0.
+        \intertext{The boundary condition for the Neumann case is}
+        \frac{\partial \psi_\tau}{\partial n}\bigg|_S &= \nabla_SC\cdot \nabla_S\psi + \lambda C \psi + C\Delta_S\psi
+    \end{align}
+    \todo{How important is the normalization condition?}
+    where $\nabla_S := \nabla - \vec{n}(\vec{n}\cdot\nabla)$ is the surface gradient operator that produces a gradient tangent to the surface, $\Delta_S$ is the Laplace-Beltrami operator on the surface \todo{I think that in this case $\Delta_S$ simplifies to $\Delta$, right?} and $\lambda' = \int_S C\left( -\lambda \psi^2 + |\nabla_S \psi|^2 \right) dS$. C is the rate of displacement of the surface $S_\tau$ in the instantaneously normal direction, $C = \lim_{h\to0^+}\frac{(P^*-P)\cdot \vec{n}}{h}$ where $P^*$ is evaluated at $\tau+h$ and $P$ evaluated at $\tau$.
+    % \begin{center}
+    %     \includegraphics[width=0.4\textwidth]{../Figures/Grinfeld_C_figure.png} 
+    % \end{center}
+
+    \todo[inline]{Does this mean that we would need to solve the PDE for $\psi_\tau$ in \eqref{eq:psi_tau defn}?}
+
+    \begin{algorithm}
+    \caption{Pseudocode for construction of $\kappa'$}
+    \begin{algorithmic}[1] 
+        \State \textbf{Input:} $\Gamma$, $\omega^2$
+        \State \textbf{Output:} $\kappa'$
+        \State Generate the eigenfunction $\psi$ using Riley's forward solver
+        \State For an initial guess perturbation, compute $C$, $\lambda'$.
+        \State Solve the PDE in \eqref{eq:psi_tau defn} for $\psi_\tau$ using above BCs.
+        \State Algebraically solve for $\kappa'$ using the relation \eqref{eq:Frechet derivative relation}
+        \State Use $\kappa'$ in a Newton step to update parameterization of $\Gamma$.
+        \State Repeat until converged.
+    \end{algorithmic}
+    \end{algorithm}
+    \todo[inline]{I am assuming that we will need some intitial guess direction to take, not quite sure how we would get the first $\kappa'$ otherwise as $C$ would be 0. Maybe this will become more clear as I look into the GitHub repos you shared tomorrow.}
+    
+\end{document}
